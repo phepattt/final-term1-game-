@@ -12,8 +12,9 @@ public :
 	int counter = 0  ;
 	int mod = 10 ;
 	int push = 3;
-	int percentDropGlove = 10; 
+	int percentDropGlove = 15; 
 	int percentDropCoin = 4; 
+	int percentDropUlti = 35 ; 
 	int hp = 20; 
 	bool arrive = true ; 
 	bool enemycanmoveup = true;

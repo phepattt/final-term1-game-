@@ -7,7 +7,6 @@ pickup::pickup()
 	rect.setPosition(0, 0);
 	rect.setFillColor(sf::Color::Yellow);
 	sprite.setPosition(0, 0); 
-
 };
 
 void pickup::updatepickup()

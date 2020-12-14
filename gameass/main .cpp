@@ -46,6 +46,12 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1080 , 720), "LegendAdventure",sf::Style::Close);
 	window.setFramerateLimit(120);
 
+	//View 
+	sf::View view1;
+	view1.setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
+	view1.setCenter(sf::Vector2f(view1.getSize().x / 2, view1.getSize().y / 2));
+	window.setView(view1);
+
 	//create menu before game start 
 	menu menu(window.getSize().x, window.getSize().y)	;
 
@@ -71,6 +77,12 @@ int main()
 	bgmInmenu.play();
 	bgmInmenu.setLoop(true);
 
+	//sound effect 
+	sf::SoundBuffer bufferHitted;
+	bufferHitted.loadFromFile("hitted sound.wav");
+	sf::Sound soundHitted;
+	soundHitted.setBuffer(bufferHitted);
+		
 	//bgmIngame music
 	sf::Music bgmIngame;
 	bgmIngame.openFromFile("bgmIngame.ogg");
@@ -88,6 +100,10 @@ int main()
 	sf::Texture glove;
 	glove.loadFromFile("gloveofshoot.png");
 	
+	//ulti texture 
+	sf::Texture ulti;
+	ulti.loadFromFile("powerup.jpg");
+
 	// projectile texture
 	sf::Texture redfireball; 
 	redfireball.loadFromFile("red fire ball2.png");
@@ -119,7 +135,6 @@ int main()
 	//Enemy class purple bat
 	class enemy enemy1;
 	enemy1.sprite.setTexture(texturePurplebat);
-	enemy1.rect.setPosition(200, 200);
 	enemy1.rect.setSize(sf::Vector2f(48, 70));
 	enemy1.sprite.setTextureRect(sf::IntRect(0, 0, 48, 70));
 	enemyArray.push_back(enemy1);
@@ -135,75 +150,359 @@ int main()
 	// wall class 
 	class wall wall1;
 	wall1.sprite.setTexture(texturePurplebat);
-	wall1.rect.setSize(sf::Vector2f(70 ,70));
+	int blockSize = 80;
+	wall1.rect.setSize(sf::Vector2f(blockSize, blockSize));
 	
 	//building room with door 
 
-	int roomSize = generateRandom(8)+5 ;
-	int verticaldoorright = generateRandom(4); 
-	int startX = r; 
-	int startY = r; 
-	wall1.destructable = true ;
+	int roomSize = generateRandom(4)+4 ;
+	int horizontaldoorup = 0; 
+	int horizontaldoordown = 0; 
+	int verticaldoorright = 0 ;
+	int verticaldoorleft = 0;
+	int startX = 0; 
+	int startY = 0; 
+	int rememberWidth = roomSize + r;
+	int pastroomSize = 0;
+	int pastdoor = 0;
+	wall1.destructable = false ;
 
-	//create enemy inside room 
-	enemy1.rect.setPosition(startX + ((roomSize -5 ) * 70 )- 70, startY + ((roomSize - 5) * 70) - 70);
-	enemyArray.push_back(enemy1);
-	enemy1.rect.setPosition(startX + ((roomSize - 5) * 70) - 70, startY + ((roomSize - 5) * 70) - 70);
-	enemyArray.push_back(enemy1);
-	enemy1.rect.setPosition(startX + ((roomSize - 5) * 70) - 70, startY + ((roomSize - 5) * 70) - 70);
-	enemyArray.push_back(enemy1);
-	enemy1.rect.setPosition(startX + ((roomSize - 5) * 70) - 70, startY + ((roomSize - 5) * 70) - 70);
-	enemyArray.push_back(enemy1);
-	enemy1.rect.setPosition(startX + ((roomSize - 5) * 70) - 70, startY + ((roomSize - 5) * 70) - 70);
-	enemyArray.push_back(enemy1);
+	// create randomsize and position of room 1
 
-	// create randomsize and position of room 
-		counter = 0;
+	 roomSize =  5 ;
+	 horizontaldoorup = 3;
+	 horizontaldoordown = 3;
+	 verticaldoorright = 3;
+	 verticaldoorleft = 3;
+	 startX = 0;
+	 startY = 0;
+	 rememberWidth = roomSize + r;
+	 pastroomSize = roomSize;
+	 pastdoor = horizontaldoorup;
+	 wall1.destructable = false;
+
+		counter = 0; //up
 		while (counter < roomSize+1)
-		{
-			wall1.rect.setPosition( (70 * counter )+ startX, startY);
-			wallArray.push_back(wall1);
-			counter++;
+		{	
+				wall1.rect.setPosition((blockSize * counter) + startX, startY);
+				wallArray.push_back(wall1);		
+				counter++;
 		}
 		counter = 0;
-		while (counter < roomSize+1)
+		while (counter < roomSize + 1) //down
 		{
-			wall1.rect.setPosition((70* counter) + startX, (70*roomSize)+startY);
-			wallArray.push_back(wall1);
-			counter++;
-		}
-		counter = 0;
-		while (counter < roomSize+1)
-		{
-			wall1.rect.setPosition(startX, (70* counter) + startY);
-			wallArray.push_back(wall1);
-			counter++;
-		}
-		counter = 0;
-		while (counter < roomSize+1)
-		{
-			wall1.rect.setPosition(startX, (70 * counter) + startY);
-			wallArray.push_back(wall1);
-			counter++;
-		}
-		counter = 0;
-		while (counter < roomSize+1)
-		{
-			if (counter != verticaldoorright && counter != verticaldoorright+1)
-			{
-				wall1.rect.setPosition(startX + (70 * roomSize), (70 * counter) + startY);
+			
+				wall1.rect.setPosition((blockSize * counter) + startX, (blockSize * roomSize) + startY);
 				wallArray.push_back(wall1);
 				
-			}
+			
 			counter++;
 		}
 		counter = 0;
 		
-		//create random box 
-		wall1.destructable = true; 
-		wall1.rect.setPosition(500,500);
-		wall1.rect.setFillColor(sf::Color::Green);
-		wallArray.push_back(wall1);
+		while (counter < roomSize + 1)	//left
+		{
+			
+				wall1.rect.setPosition(startX, (blockSize * counter) + startY);
+				wallArray.push_back(wall1);
+				
+			
+			counter++;
+		}
+		counter = 0;
+
+		while (counter < roomSize + 1)	//right
+		{
+			if (counter != verticaldoorright)
+			{
+				wall1.rect.setPosition((blockSize * roomSize) + startX, (blockSize * counter) + startY);
+				wallArray.push_back(wall1);
+			}
+			counter++;
+		}
+		counter = 0;
+
+		// create room 2 randomside				1 --> x 
+
+
+		startX = (blockSize * 5) ;
+		startY = (blockSize * 6) ;
+		roomSize =  7 ;
+		horizontaldoorup = 4;
+		horizontaldoordown = 4;
+		verticaldoorright = 4;
+		verticaldoorleft = 4;
+		wall1.destructable = false; 
+
+		while (counter < roomSize + 1)//up
+		{
+			
+				wall1.rect.setPosition((blockSize * counter) + startX, 0 );
+				wallArray.push_back(wall1);
+				counter++;
+		}
+		counter = 0;
+
+		while (counter < roomSize + 1) //down
+		{
+			if (counter != horizontaldoordown)
+			{
+				wall1.rect.setPosition((blockSize * counter) + startX, (blockSize * roomSize) + startY);
+				wallArray.push_back(wall1);
+
+			}
+			counter++;
+		}
+		counter = 0;
+
+		while (counter < roomSize + 1)	//left
+		{
+		
+				wall1.rect.setPosition(startX, (blockSize * counter) + startY);
+				wallArray.push_back(wall1);
+
+			
+			counter++;
+		}
+		counter = 0;
+
+		while (counter < roomSize + 1)	//right 1 
+		{
+			if (counter != verticaldoorright)
+			{
+				wall1.rect.setPosition((blockSize * roomSize) + startX, (blockSize * counter) + startY);
+				wallArray.push_back(wall1);
+			}
+			counter++;
+		}
+		counter = 0;
+
+		while (counter < roomSize )	//right upper 2 
+		{
+			
+				wall1.rect.setPosition((blockSize * roomSize) + startX, (blockSize * counter) );
+				wallArray.push_back(wall1);
+				counter++; 
+		}
+		counter = 0;
+
+		//create things in room 2
+		counter = 0;
+
+		while (counter < (roomSize - 1 ))
+		{
+			counter2 = 0;
+			while (counter2 <  2 * (roomSize - 1 ))
+			{
+				int tempRandom = generateRandom(15);
+
+				if (tempRandom == 3)
+				{
+					//create random box 
+					wall1.destructable = true;
+					wall1.rect.setPosition((counter * blockSize ) + startX + blockSize, (counter2 * blockSize) + blockSize);
+					wall1.rect.setFillColor(sf::Color::Green);
+					wallArray.push_back(wall1);
+				}
+				if (tempRandom == 2)
+				{
+					//create enemy
+					enemy1.rect.setPosition((counter* blockSize) + startX + blockSize, (counter2* blockSize)  + blockSize);
+					enemyArray.push_back(enemy1);
+				}
+
+				counter2++;
+			}
+			counter++; 
+		}
+		counter = 0;
+		counter2 = 0; 
+		wall1.rect.setFillColor(sf::Color::Black);
+
+
+
+		// room 3 
+		
+
+		startX = (blockSize * 12);
+		startY = (blockSize * 8 );
+		roomSize = 6 ;
+		horizontaldoorup = 2;
+		horizontaldoordown = 2;
+		verticaldoorright = 2;
+		verticaldoorleft = 2;
+		wall1.destructable = false;
+
+
+		while (counter < roomSize + 1)//up
+		{
+
+			wall1.rect.setPosition((blockSize * counter) + startX, startY );
+			wallArray.push_back(wall1);
+			counter++;
+		}
+		counter = 0;
+		while (counter < roomSize + 1)//down
+		{
+
+			wall1.rect.setPosition((blockSize * counter) + startX, startY + (4 * blockSize));
+			wallArray.push_back(wall1);
+			counter++;
+		}
+		counter = 0;
+		while (counter < roomSize - 2 )	//right 1 
+		{
+			if (counter != verticaldoorright)
+			{
+				wall1.rect.setPosition((blockSize * roomSize) + startX, startY + (counter * blockSize));
+				wallArray.push_back(wall1);
+			}
+			counter++;
+		}
+		counter = 0;
+
+		// room 4 
+
+
+		startX = (blockSize * 18);
+		startY = (blockSize * 4);
+		roomSize = 12 ;
+		horizontaldoorup = 6;
+		horizontaldoordown = 6;
+		verticaldoorright = 6;
+		verticaldoorleft = 6;
+		wall1.destructable = false;
+
+
+		while (counter < roomSize + 1)//up
+		{
+
+			wall1.rect.setPosition((blockSize * counter) + startX, startY);
+			wallArray.push_back(wall1);
+			counter++;
+		}
+		counter = 0;
+		
+		while (counter < roomSize + 1)//down
+		{
+
+			wall1.rect.setPosition((blockSize * counter) + startX, startY + (blockSize * roomSize) );
+			wallArray.push_back(wall1);
+			counter++;
+		}
+		counter = 0;
+
+		while (counter < roomSize + 1)	//left
+		{
+
+			if (counter != verticaldoorleft)
+			{
+			
+			wall1.rect.setPosition(startX, (blockSize * counter) + startY);
+			wallArray.push_back(wall1);
+			}
+
+			counter++;
+		}
+		counter = 0;
+
+		while (counter < roomSize + 1)	//right 
+		{
+
+				wall1.rect.setPosition(startX + (blockSize * roomSize), (blockSize * counter) + startY);
+				wallArray.push_back(wall1);
+
+			counter++;
+		}
+
+		counter = 0;
+		// room 5 
+
+		startX = (blockSize * 7 ) ;
+		startY = (blockSize * 14 )	;
+		roomSize = 3 ;
+		horizontaldoorup = 1;
+		horizontaldoordown = 1;
+		verticaldoorright = 1;
+		verticaldoorleft = 1;
+		wall1.destructable = false;
+
+		while (counter < roomSize + 1)	//left
+		{
+				wall1.rect.setPosition(startX, (blockSize * counter) + startY);
+				wallArray.push_back(wall1);
+			counter++;
+		}
+		counter = 0;
+
+		while (counter < roomSize + 1)	//Right
+		{
+			wall1.rect.setPosition(startX + (blockSize * (roomSize + 1 )), (blockSize * counter) + startY);
+			wallArray.push_back(wall1);
+			counter++;
+		}
+		counter = 0;
+
+		while (counter < roomSize + 1)//down
+		{
+			if (counter != horizontaldoordown)
+			{
+				wall1.rect.setPosition((blockSize * counter) + startX, startY + (blockSize * roomSize));
+				wallArray.push_back(wall1);
+			}
+			counter++;
+		}
+		counter = 0;
+
+		// room 6 //secret room need key
+
+		startX = (blockSize * 4 );
+		startY = (blockSize * 17);
+		roomSize = 6 ;
+		horizontaldoorup = 4 ;
+		horizontaldoordown = 0;
+		verticaldoorright = 0;
+		verticaldoorleft = 0;
+		wall1.destructable = false;
+
+		while (counter < roomSize + 1)	//left
+		{
+			wall1.rect.setPosition(startX, (blockSize * counter) + startY);
+			wallArray.push_back(wall1);
+			counter++;
+		}
+		counter = 0;
+
+		while (counter < roomSize + 1)	//Right
+		{
+			wall1.rect.setPosition(startX + (blockSize * (roomSize + 1)), (blockSize * counter) + startY);
+			wallArray.push_back(wall1);
+			counter++;
+		}
+		counter = 0;
+
+		while (counter < roomSize + 1)//down
+		{
+			if (counter != horizontaldoordown)
+			{
+				wall1.rect.setPosition((blockSize * counter) + startX, startY + (blockSize * roomSize));
+				wallArray.push_back(wall1);
+			}
+			counter++;
+		}
+		counter = 0;
+		while (counter < roomSize + 1)//up
+		{
+			if (counter != horizontaldoorup)
+			{
+				wall1.rect.setPosition((blockSize * counter) + startX, startY);
+				wallArray.push_back(wall1);
+			}
+			counter++;
+		}
+		counter = 0;
+
+
 
 
 	/*checksize ----------------------------------------
@@ -282,10 +581,9 @@ int main()
 			}
 		}
 
+
 		else
 		{
-
-		
 
 			// time 
 			sf::Time elapsed1 = clock.getElapsedTime();
@@ -303,10 +601,10 @@ int main()
 			{
 				clock3.restart();
 				Player1.counterwalk++;
-				if (Player1.counterwalk >= 3)
-				{
-					Player1.counterwalk = 0;
-				}
+					if (Player1.counterwalk >= 3)
+					{
+						Player1.counterwalk = 0;
+					}				
 			}
 
 			counter = 0;
@@ -341,8 +639,6 @@ int main()
 				}
 				counter++;
 			}
-
-
 
 			counter = 0;
 			//enemy colied with wall 
@@ -454,7 +750,7 @@ int main()
 
 			if (Player1.Arrive == true)
 			{
-				// enemy colied with player (player take damage)  
+			// enemy colied with player (player take damage)  
 				counter = 0;
 				if (elapsed2.asSeconds() >= 1.5)
 				{
@@ -482,17 +778,20 @@ int main()
 				}
 			}
 
+
+
 			if (Player1.Arrive == true)
 			{
-				// item colied with player 
+			// item colied with player 
 				counter = 0;
 				for (iter12 = pickupArray.begin(); iter12 != pickupArray.end(); iter12++)
 				{
 					if (Player1.rect.getGlobalBounds().intersects(pickupArray[counter].rect.getGlobalBounds()))
 					{
-						if (pickupArray[counter].isCoin == true)
+						if (pickupArray[counter].isCoin == true && pickupArray[counter].isGlove == false && pickupArray[counter].isUlti == false)
 						{
 							pickup1.isGlove = false ; 
+							pickup1.isUlti = false;
 							textDisplay1.text.setFillColor(sf::Color::Yellow);
 							textDisplay1.text.setString(to_string(pickupArray[counter].coinvalue));
 							textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 4 / 5, Player1.rect.getPosition().y);
@@ -501,19 +800,36 @@ int main()
 							Player1.playermoney += pickupArray[counter].coinvalue;
 
 						}
-						pickupArray[counter].picked = true;
+			
 
-						if (pickupArray[counter].isGlove == true)
+						else if (pickupArray[counter].isCoin == false && pickupArray[counter].isGlove == true && pickupArray[counter].isUlti == false)
 						{
-							pickup1.isCoin = false ; 
+
+							pickup1.isCoin = false;
+							pickup1.isUlti = false;
 							textDisplay1.text.setFillColor(sf::Color::Yellow);
 							textDisplay1.text.setString("Glove");
 							textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 4 / 5, Player1.rect.getPosition().y);
 							textdisplayArray.push_back(textDisplay1);
-
+							Player1.playerglove = true ; 
+							projectile1.fastDelay -= 0.5 ;
+					
+						}
+							
+						
+						else if (pickupArray[counter].isCoin == false && pickupArray[counter].isGlove == false && pickupArray[counter].isUlti == true)
+						{
+							projectile1.shootlimit = 9;
+							pickup1.isGlove = false;
+							pickup1.isCoin = false;
+							textDisplay1.text.setFillColor(sf::Color::Yellow);
+							textDisplay1.text.setString("Ulti");
+							textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 4 / 5, Player1.rect.getPosition().y);
+							textdisplayArray.push_back(textDisplay1);
+							Player1.playerulti = true;
 						}
 						pickupArray[counter].picked = true;
-						
+				
 					}
 					counter++;
 				}
@@ -532,7 +848,7 @@ int main()
 					{
 						if (projectileArray[counter].rect.getGlobalBounds().intersects(enemyArray[counter2].rect.getGlobalBounds()))
 						{
-
+						
 							// text show damge hitted  
 							textDisplay1.text.setFillColor(sf::Color::Red);
 							textDisplay1.text.setString(to_string(projectileArray[counter].attackdamge));
@@ -549,6 +865,10 @@ int main()
 								enemyArray[counter2].arrive = false;
 							}
 						}
+
+
+
+
 
 						counter2++;
 					}
@@ -576,17 +896,30 @@ int main()
 					if (generateRandom0(enemyArray[counter].percentDropCoin) == 1)
 					{
 						pickup1.isCoin = true ; 
+						pickup1.isUlti = false;
 						pickup1.isGlove = false ; 
 						pickup1.sprite.setTexture(coin);
 						pickup1.rect.setPosition(enemyArray[counter].rect.getPosition());
 						pickupArray.push_back(pickup1);
 					}
 
-					if (generateRandom0(enemyArray[counter].percentDropGlove) == 1)
+					else if (generateRandom0(enemyArray[counter].percentDropGlove) == 1)
 					{
+						
 						pickup1.isCoin = false;
 						pickup1.isGlove = true;
+						pickup1.isUlti = false;
 						pickup1.sprite.setTexture(glove);
+						pickup1.rect.setPosition(enemyArray[counter].rect.getPosition());
+						pickupArray.push_back(pickup1);
+					}
+					else if (generateRandom0(enemyArray[counter].percentDropUlti) == 2)
+					{
+
+						pickup1.isCoin = false;
+						pickup1.isGlove = false;
+						pickup1.isUlti = true;
+						pickup1.sprite.setTexture(ulti);
 						pickup1.rect.setPosition(enemyArray[counter].rect.getPosition());
 						pickupArray.push_back(pickup1);
 					}
@@ -629,12 +962,14 @@ int main()
 					//drop glove
 					if (generateRandom0(wallArray[counter].percentDropGlove) == 1)
 					{
+					
 						pickup1.isGlove = true;
 						pickup1.isCoin = false;
 						pickup1.sprite.setTexture(glove);
 						pickup1.rect.setPosition(wallArray[counter].rect.getPosition());
 						pickupArray.push_back(pickup1);
 					}
+
 					wallArray.erase(iter16);
 					break;
 				}
@@ -676,14 +1011,112 @@ int main()
 				if (elapsed1.asSeconds() >= projectile1.shootingspeed)
 				{
 					clock.restart();
+
+
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 					{
-						projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2, Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2);
-						projectile1.direction = Player1.direction;
-						projectileArray.push_back(projectile1);
-					}
+						
+							if (Player1.playerglove == false )
+							{
+
+								projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2, Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2);
+								projectile1.direction = Player1.direction;
+								projectileArray.push_back(projectile1);
+								Player1.playerglove = false;
+
+							}
+
+							if (Player1.playerglove == true)
+							{
+
+								projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2, Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2);
+								projectile1.direction = Player1.direction;
+								projectileArray.push_back(projectile1);
+
+
+								if (elapsed6.asSeconds() >= projectile1.fastDelay)
+								{
+
+									clock6.restart();
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + 25, Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + 25);
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2, Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2);
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 - 25, Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 - 25);
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+								}
+
+							}
+						
+							if (Player1.playerulti == true && sf::Keyboard::isKeyPressed(sf::Keyboard::B))
+							{
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(40), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(40));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(40), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(40));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(40), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(40));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+									clock6.restart();
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(40), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(40));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(40), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(40));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(40), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(40));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+
+									
+
+									textDisplay1.text.setFillColor(sf::Color::White);
+									if (projectile1.shootlimit >= 1)
+									{
+										textDisplay1.text.setString(to_string(projectileArray[counter].shootlimit));
+										textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 2 / 5, Player1.rect.getPosition().y);
+										textdisplayArray.push_back(textDisplay1);
+
+									}
+									else if (projectile1.shootlimit <= 0)
+									{
+										projectile1.shootlimit = 10;
+										Player1.playerulti = false;
+										textDisplay1.text.setString("OUT OF SPECIAL ATTACK");
+										textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 2 / 5, Player1.rect.getPosition().y);
+										textdisplayArray.push_back(textDisplay1);
+									}
+									projectile1.shootlimit--;
+
+
+
+
+
+
+							}
+							
+					}		
+					
+
 				}
+			
+
 				counter = 0;
+
 			}
 			// draw projectile
 
@@ -760,21 +1193,27 @@ int main()
 				Player1.sprite.setTexture(coffin);
 				window.draw(Player1.sprite);
 			}
+
 			else
 			{
-				
+
 			}
 
+
+			//set player view
+			window.setView(view1);
+			view1.setCenter(Player1.rect.getPosition());
+
 			//draw player hp
-			text.setPosition(850, 675);
+			text.setPosition(Player1.rect.getPosition().x + 300 , Player1.rect.getPosition().y + 335);
 			text.setString("Player HP : " + to_string(Player1.hp));
 			window.draw(text);
 
 			// draw player money 
-			text.setPosition(850, 10);
+			text.setPosition(Player1.rect.getPosition().x + 300, Player1.rect.getPosition().y - 335);
 			text.setString("Player money : " + to_string(Player1.playermoney));
 			window.draw(text);
-
+			
 		}
 
 		// update window 
@@ -783,5 +1222,5 @@ int main()
 	}
 
 	return 0;
-}
+} 
 

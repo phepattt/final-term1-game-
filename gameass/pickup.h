@@ -9,6 +9,7 @@ public:
 	bool isCoin = false ; 
 	bool isGlove = false ;
 	bool picked = false;
+	bool isUlti = false; 
 	int coinvalue = 1;
 	sf::Text pickedItem;
 	pickup();

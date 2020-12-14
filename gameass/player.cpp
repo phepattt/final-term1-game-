@@ -4,10 +4,10 @@ player::player()
 {
 	
 	rect.setSize(sf::Vector2f(44, 64));
-	rect.setPosition(500, 500);
+	rect.setPosition(210, 210);
 	rect.setFillColor(sf::Color::White);
 	sprite.setOrigin(5, 5);
-	sprite.setPosition(0, 0);
+	sprite.setPosition(210, 210);
 	sprite.setTextureRect(sf::IntRect(0, 0, 52, 69));
 	coffin1.setSize(sf::Vector2f(52,69));
 
@@ -27,7 +27,9 @@ void player::updatemovement()
 		{
 			direction = 1;
 			rect.move(-movementSpeed, 0.0f);
+			
 			sprite.setTextureRect(sf::IntRect(52 * counterwalk, 69 * 1, 52, 69));
+			
 		}
 		playercanmovedown = true;
 		playercanmoveleft = true;
