@@ -56,6 +56,19 @@ void menu::draw(sf::RenderWindow& window)
 	}
 }
 
+void menu::drawDEAD(sf::RenderWindow& window)
+{
+
+	window.draw(bg1);
+	window.draw(behindtext);
+	window.draw(gamename);
+	for (int i = 0; i < MAX_NUMBER_OF_STRING; i++)
+	{
+		window.draw(text[i]);
+	}
+}
+
+
 void menu::moveup()
 {
 

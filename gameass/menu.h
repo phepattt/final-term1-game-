@@ -14,6 +14,7 @@ public:
 	~menu();
 
 	void draw(sf::RenderWindow& window);
+	void drawDEAD(sf::RenderWindow& window);
 	void moveup();
 	void movedown();
 

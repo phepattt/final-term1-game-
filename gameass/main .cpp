@@ -6,6 +6,7 @@
 #include<time.h>
 #include<vector>
 #include<stdlib.h>
+#include<sstream>
 #include "entity.h"
 #include "player.h"
 #include "projectile.h"
@@ -21,6 +22,9 @@ using namespace std;
 
 int main()
 {
+startgame :
+
+	int i = 0;
 	//counter 
 	int counter = 0;
 	int counter2 = 0;
@@ -50,7 +54,7 @@ int main()
 	sf::View view1;
 	view1.setSize(sf::Vector2f(window.getSize().x,window.getSize().y));
 	view1.setCenter(sf::Vector2f(view1.getSize().x / 2, view1.getSize().y / 2));
-	window.setView(view1);
+	
 
 	//create menu before game start 
 	menu menu(window.getSize().x, window.getSize().y)	;
@@ -73,20 +77,51 @@ int main()
 	//bgmmenu music
 	sf::Music bgmInmenu;
 	bgmInmenu.openFromFile("music1.ogg");
-	bgmInmenu.setVolume(15);
+	bgmInmenu.setVolume(10);
 	bgmInmenu.play();
 	bgmInmenu.setLoop(true);
 
 	//sound effect 
+	sf::SoundBuffer bufferShoot;
+	bufferShoot.loadFromFile("shooting5.wav");
+	sf::Sound soundShoot;
+	soundShoot.setBuffer(bufferShoot);
+	soundShoot.setVolume(15);
+
 	sf::SoundBuffer bufferHitted;
-	bufferHitted.loadFromFile("hitted sound.wav");
+	bufferHitted.loadFromFile("hitted sound1.wav");
 	sf::Sound soundHitted;
 	soundHitted.setBuffer(bufferHitted);
-		
+	soundHitted.setVolume(15);
+
+	sf::SoundBuffer bufferGotitem;
+	bufferGotitem.loadFromFile("got item.wav");
+	sf::Sound soundGotitem;
+	soundGotitem.setBuffer(bufferGotitem);
+	soundGotitem.setVolume(15);
+
+	sf::SoundBuffer bufferMoney;
+	bufferMoney.loadFromFile("got money.ogg");
+	sf::Sound soundMoney;
+	soundMoney.setBuffer(bufferMoney);
+	soundMoney.setVolume(15);
+
+	sf::SoundBuffer bufferBuy;
+	bufferBuy.loadFromFile("buying item.ogg");
+	sf::Sound soundBuy;
+	soundBuy.setBuffer(bufferBuy);
+	soundBuy.setVolume(15);
+
+	sf::SoundBuffer bufferUlti;
+	bufferUlti.loadFromFile("ulti sound1.wav");
+	sf::Sound soundUlti;
+	soundUlti.setBuffer(bufferUlti);
+	soundUlti.setVolume(15);
+
 	//bgmIngame music
 	sf::Music bgmIngame;
 	bgmIngame.openFromFile("bgmIngame.ogg");
-	bgmIngame.setVolume(15);	
+	bgmIngame.setVolume(10);	
 
 	// Player texture
 	sf::Texture texture1 ;
@@ -102,7 +137,19 @@ int main()
 	
 	//ulti texture 
 	sf::Texture ulti;
-	ulti.loadFromFile("powerup.jpg");
+	ulti.loadFromFile("ulti.png");
+
+	// boot texture 
+	sf::Texture boot; 
+	boot.loadFromFile("boot.png");
+	
+	// Potion texture
+	sf::Texture potion;
+	potion.loadFromFile("potion1.png");
+
+	// ATCK up textuture 
+	sf::Texture atkup;
+	atkup.loadFromFile("atkup.png");
 
 	// projectile texture
 	sf::Texture redfireball; 
@@ -113,8 +160,8 @@ int main()
 	Player1.sprite.setTexture(texture1);
 
 	//coffin texture 
-	sf::Texture coffin;
-	coffin.loadFromFile("coffin1.png");
+	sf::Texture heart;
+	heart.loadFromFile("heart.png");
 
 	// Player projectile array 
 	vector<projectile>::const_iterator iter; 
@@ -294,9 +341,9 @@ int main()
 			counter2 = 0;
 			while (counter2 <  2 * (roomSize - 1 ))
 			{
-				int tempRandom = generateRandom(15);
+				int tempRandom = generateRandom(5);
 
-				if (tempRandom == 3)
+				if (tempRandom == 1 )
 				{
 					//create random box 
 					wall1.destructable = true;
@@ -530,6 +577,11 @@ int main()
 
 	pickupArray.push_back(pickup1);
 	pickup1.isCoin = true;
+
+
+	//
+	
+
 	while (window.isOpen())
 	{
 	
@@ -544,6 +596,7 @@ int main()
 			{
 				window.close();
 			}
+		
 			switch ( event.type)
 			{
 			case sf::Event::KeyReleased:
@@ -553,12 +606,14 @@ int main()
 					menu.moveup();
 					menu.atText = 0; 
 					break;
+
 				case sf::Keyboard::Down:
 					menu.movedown();
 					menu.atText = 1; 
 					break;
 				}
 			}
+			
 		}
 		
 		window.clear(sf::Color(150,150,150));
@@ -574,6 +629,7 @@ int main()
 				bgmIngame.play();
 				bgmIngame.setLoop(true);
 				menu.enterplay = true; 
+				Player1.Arrive = true;
 			}
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && menu.atText == 1)
 			{
@@ -731,6 +787,7 @@ int main()
 					{
 						if (projectileArray[counter].rect.getGlobalBounds().intersects(wallArray[counter2].rect.getGlobalBounds()))
 						{
+							soundHitted.play();
 							if (wallArray[counter2].destructable == true)
 							{
 								wallArray[counter2].hp -= 1;
@@ -788,25 +845,38 @@ int main()
 				{
 					if (Player1.rect.getGlobalBounds().intersects(pickupArray[counter].rect.getGlobalBounds()))
 					{
-						if (pickupArray[counter].isCoin == true && pickupArray[counter].isGlove == false && pickupArray[counter].isUlti == false)
+						if (pickupArray[counter].isCoin == true && pickupArray[counter].isGlove == false && pickupArray[counter].isUlti == false && pickupArray[counter].isAtkyp == false && pickupArray[counter].isBoot == false && pickupArray[counter].isPotion == false && pickupArray[counter].isHeart == false)
 						{
-							pickup1.isGlove = false ; 
+							soundMoney.play();
+
+							pickup1.isAtkyp = false;
+							pickup1.isBoot = false;
+							pickup1.isCoin = true; 
+							pickup1.isGlove = false; 
 							pickup1.isUlti = false;
+							pickup1.isPotion = false; 
+							pickup1.isHeart = false;
+
 							textDisplay1.text.setFillColor(sf::Color::Yellow);
 							textDisplay1.text.setString(to_string(pickupArray[counter].coinvalue));
 							textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 4 / 5, Player1.rect.getPosition().y);
 							textdisplayArray.push_back(textDisplay1);
 
-							Player1.playermoney += pickupArray[counter].coinvalue;
+							Player1.playermoney += pickup1.coinvalue;
 
 						}
 			
 
-						else if (pickupArray[counter].isCoin == false && pickupArray[counter].isGlove == true && pickupArray[counter].isUlti == false)
+						else if (pickupArray[counter].isCoin == false && pickupArray[counter].isGlove == true && pickupArray[counter].isUlti == false && pickupArray[counter].isAtkyp == false && pickupArray[counter].isBoot == false && pickupArray[counter].isPotion == false && pickupArray[counter].isHeart == false)
 						{
-
+							soundGotitem.play();
+							pickup1.isAtkyp = false;
+							pickup1.isBoot = false;
+							pickup1.isGlove = true;
 							pickup1.isCoin = false;
 							pickup1.isUlti = false;
+							pickup1.isPotion = false;
+							pickup1.isHeart = false;
 							textDisplay1.text.setFillColor(sf::Color::Yellow);
 							textDisplay1.text.setString("Glove");
 							textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 4 / 5, Player1.rect.getPosition().y);
@@ -817,17 +887,107 @@ int main()
 						}
 							
 						
-						else if (pickupArray[counter].isCoin == false && pickupArray[counter].isGlove == false && pickupArray[counter].isUlti == true)
+						else if (pickupArray[counter].isCoin == false && pickupArray[counter].isGlove == false && pickupArray[counter].isUlti == true && pickupArray[counter].isAtkyp == false && pickupArray[counter].isBoot == false && pickupArray[counter].isPotion == false && pickupArray[counter].isHeart == false)
 						{
+							soundGotitem.play();
 							projectile1.shootlimit = 9;
-							pickup1.isGlove = false;
+							pickup1.isAtkyp = false;
+							pickup1.isBoot = false;
 							pickup1.isCoin = false;
+							pickup1.isGlove = false;
+							pickup1.isUlti = true;
+							pickup1.isPotion = false;
+							pickup1.isHeart = false;
 							textDisplay1.text.setFillColor(sf::Color::Yellow);
 							textDisplay1.text.setString("Ulti");
 							textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 4 / 5, Player1.rect.getPosition().y);
 							textdisplayArray.push_back(textDisplay1);
 							Player1.playerulti = true;
 						}
+
+						else if ( pickupArray[counter].isCoin == false && pickupArray[counter].isGlove == false && pickupArray[counter].isUlti == false && pickupArray[counter].isAtkyp == true  && pickupArray[counter].isBoot == false && pickupArray[counter].isPotion == false && pickupArray[counter].isHeart == false)
+						{
+							soundGotitem.play();
+
+							pickup1.isAtkyp = true;
+							pickup1.isBoot = false;
+							pickup1.isCoin = false;
+							pickup1.isGlove = false;
+							pickup1.isUlti = false;
+							pickup1.isPotion = false;
+							pickup1.isHeart = false;
+							textDisplay1.text.setFillColor(sf::Color::Yellow);
+							textDisplay1.text.setString("+1 AttackDamage");
+							projectile1.attackdamge += pickup1.atkup; 
+							textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 4 / 5, Player1.rect.getPosition().y);
+							textdisplayArray.push_back(textDisplay1);
+						}
+
+						else if (pickupArray[counter].isCoin == false && pickupArray[counter].isGlove == false && pickupArray[counter].isUlti == false && pickupArray[counter].isAtkyp == false && pickupArray[counter].isBoot == true && pickupArray[counter].isPotion == false && pickupArray[counter].isHeart == false)
+						{
+							soundGotitem.play();
+						
+							pickup1.isAtkyp = false;
+							pickup1.isBoot = true;
+							pickup1.isCoin = false;
+							pickup1.isGlove = false;
+							pickup1.isUlti = false;
+							pickup1.isPotion = false;
+							pickup1.isHeart = false;
+							textDisplay1.text.setFillColor(sf::Color::Yellow);
+							textDisplay1.text.setString("+0.25 speed");
+							Player1.movementSpeed += pickup1.bootspeed;
+							textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 4 / 5, Player1.rect.getPosition().y);
+							textdisplayArray.push_back(textDisplay1);
+						}
+
+						else if (pickupArray[counter].isCoin == false && pickupArray[counter].isGlove == false && pickupArray[counter].isUlti == false && pickupArray[counter].isAtkyp == false && pickupArray[counter].isBoot == false && pickupArray[counter].isPotion == true && pickupArray[counter].isHeart == false)
+						{
+							soundGotitem.play();
+		
+							pickup1.isAtkyp = false;
+							pickup1.isBoot = false;
+							pickup1.isCoin = false;
+							pickup1.isGlove = false;
+							pickup1.isUlti = false;
+							pickup1.isPotion = true;
+							pickup1.isHeart = false;
+							textDisplay1.text.setFillColor(sf::Color::Green);
+							textDisplay1.text.setString("+10 HP");
+							Player1.hp += pickup1.heal;
+							if (Player1.hp >= Player1.maxHp)
+							{
+								Player1.hp = Player1.maxHp; 
+							}
+							textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 4 / 5, Player1.rect.getPosition().y);
+							textdisplayArray.push_back(textDisplay1);
+							Player1.playerulti = true;
+						}
+
+						else if (pickupArray[counter].isCoin == false && pickupArray[counter].isGlove == false && pickupArray[counter].isUlti == false && pickupArray[counter].isAtkyp == false && pickupArray[counter].isBoot == false && pickupArray[counter].isPotion == false && pickupArray[counter].isHeart == true)
+						{
+						soundGotitem.play();
+
+						pickup1.isAtkyp = false;
+						pickup1.isBoot = false;
+						pickup1.isCoin = false;
+						pickup1.isGlove = false;
+						pickup1.isUlti = false;
+						pickup1.isPotion = false;
+						pickup1.isHeart = true; 
+						textDisplay1.text.setFillColor(sf::Color::Red);
+						textDisplay1.text.setString("+10 MAX HP");
+						Player1.maxHp += Player1.maxHp;
+
+						if (Player1.hp >= Player1.maxHp)
+						{
+							Player1.hp = Player1.maxHp;
+						}
+						textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 4 / 5, Player1.rect.getPosition().y);
+						textdisplayArray.push_back(textDisplay1);
+						Player1.playerulti = true;
+						}
+
 						pickupArray[counter].picked = true;
 				
 					}
@@ -848,7 +1008,7 @@ int main()
 					{
 						if (projectileArray[counter].rect.getGlobalBounds().intersects(enemyArray[counter2].rect.getGlobalBounds()))
 						{
-						
+							soundHitted.play();
 							// text show damge hitted  
 							textDisplay1.text.setFillColor(sf::Color::Red);
 							textDisplay1.text.setString(to_string(projectileArray[counter].attackdamge));
@@ -895,9 +1055,12 @@ int main()
 				{
 					if (generateRandom0(enemyArray[counter].percentDropCoin) == 1)
 					{
-						pickup1.isCoin = true ; 
+						pickup1.isAtkyp = false;
+						pickup1.isBoot = false;
+						pickup1.isCoin = true;
+						pickup1.isGlove = false;
 						pickup1.isUlti = false;
-						pickup1.isGlove = false ; 
+						pickup1.isPotion = false;
 						pickup1.sprite.setTexture(coin);
 						pickup1.rect.setPosition(enemyArray[counter].rect.getPosition());
 						pickupArray.push_back(pickup1);
@@ -906,23 +1069,68 @@ int main()
 					else if (generateRandom0(enemyArray[counter].percentDropGlove) == 1)
 					{
 						
+						pickup1.isAtkyp = false;
+						pickup1.isBoot = false;
 						pickup1.isCoin = false;
 						pickup1.isGlove = true;
 						pickup1.isUlti = false;
+						pickup1.isPotion = false;
 						pickup1.sprite.setTexture(glove);
 						pickup1.rect.setPosition(enemyArray[counter].rect.getPosition());
 						pickupArray.push_back(pickup1);
 					}
-					else if (generateRandom0(enemyArray[counter].percentDropUlti) == 2)
+					else if (generateRandom0(enemyArray[counter].percentDropUlti) == 1)
 					{
-
+						pickup1.isAtkyp = false;
+						pickup1.isBoot = false;
 						pickup1.isCoin = false;
 						pickup1.isGlove = false;
 						pickup1.isUlti = true;
+						pickup1.isPotion = false;
 						pickup1.sprite.setTexture(ulti);
 						pickup1.rect.setPosition(enemyArray[counter].rect.getPosition());
 						pickupArray.push_back(pickup1);
 					}
+					else if (generateRandom0(enemyArray[counter].percentDropBoot) == 1)
+					{
+						pickup1.isAtkyp = false;
+						pickup1.isBoot = true;
+						pickup1.isCoin = false;
+						pickup1.isGlove = false;
+						pickup1.isUlti = false;
+						pickup1.isPotion = false;
+						pickup1.sprite.setTexture(boot);
+						pickup1.rect.setPosition(enemyArray[counter].rect.getPosition());
+						pickupArray.push_back(pickup1);
+					}
+					else if (generateRandom0(enemyArray[counter].percentDropPotion) == 1)
+					{
+						pickup1.isAtkyp = false;
+						pickup1.isBoot = false;
+						pickup1.isCoin = false;
+						pickup1.isGlove = false;
+						pickup1.isUlti = false;
+						pickup1.isPotion = true;
+						pickup1.sprite.setTexture(potion);
+						pickup1.rect.setPosition(enemyArray[counter].rect.getPosition());
+						pickupArray.push_back(pickup1);
+					}
+					else if (generateRandom0(enemyArray[counter].percentDropAtkup) == 1)
+					{
+						pickup1.isAtkyp = true;
+						pickup1.isBoot = false;
+						pickup1.isCoin = false;
+						pickup1.isGlove = false;
+						pickup1.isUlti = false;
+						pickup1.isPotion = false;
+						pickup1.sprite.setTexture(atkup);
+						pickup1.rect.setPosition(enemyArray[counter].rect.getPosition());
+						pickupArray.push_back(pickup1);
+					}
+
+
+
+
 					enemyArray.erase(iter4);
 					break;
 				}
@@ -945,7 +1153,9 @@ int main()
 			counter = 0;
 
 			//delete detroyed wall 
+
 			counter = 0;
+
 			for (iter16 = wallArray.begin(); iter16 != wallArray.end(); iter16++)
 			{
 				if (wallArray[counter].destroy == true)
@@ -953,19 +1163,79 @@ int main()
 					//drop coin 
 					if (generateRandom0(wallArray[counter].percentDropCoin) == 1)
 					{
+						pickup1.isAtkyp = false;
+						pickup1.isBoot = false;
+						pickup1.isCoin = true;
 						pickup1.isGlove = false;
-						pickup1.isCoin = true; 
+						pickup1.isUlti = false;
+						pickup1.isPotion = false;
 						pickup1.sprite.setTexture(coin);
 						pickup1.rect.setPosition(wallArray[counter].rect.getPosition());
 						pickupArray.push_back(pickup1);
 					}
-					//drop glove
-					if (generateRandom0(wallArray[counter].percentDropGlove) == 1)
+
+					else if (generateRandom0(wallArray[counter].percentDropGlove) == 1)
 					{
-					
-						pickup1.isGlove = true;
+
+						pickup1.isAtkyp = false;
+						pickup1.isBoot = false;
 						pickup1.isCoin = false;
+						pickup1.isGlove = true;
+						pickup1.isUlti = false;
+						pickup1.isPotion = false;
 						pickup1.sprite.setTexture(glove);
+						pickup1.rect.setPosition(wallArray[counter].rect.getPosition());
+						pickupArray.push_back(pickup1);
+					}
+
+					else if (generateRandom0(wallArray[counter].percentDropUlti) == 1)
+					{
+						pickup1.isAtkyp = false;
+						pickup1.isBoot = false;
+						pickup1.isCoin = false;
+						pickup1.isGlove = false;
+						pickup1.isUlti = true;
+						pickup1.isPotion = false;
+						pickup1.sprite.setTexture(ulti);
+						pickup1.rect.setPosition(wallArray[counter].rect.getPosition());
+						pickupArray.push_back(pickup1);
+					}
+
+					else if (generateRandom0(wallArray[counter].percentDropBoot) == 1)
+					{
+						pickup1.isAtkyp = false;
+						pickup1.isBoot = true;
+						pickup1.isCoin = false;
+						pickup1.isGlove = false;
+						pickup1.isUlti = false;
+						pickup1.isPotion = false;
+						pickup1.sprite.setTexture(boot);
+						pickup1.rect.setPosition(wallArray[counter].rect.getPosition());
+						pickupArray.push_back(pickup1);
+					}
+
+					else if (generateRandom0(wallArray[counter].percentDropPotion) == 1)
+					{
+						pickup1.isAtkyp = false;
+						pickup1.isBoot = false;
+						pickup1.isCoin = false;
+						pickup1.isGlove = false;
+						pickup1.isUlti = false;
+						pickup1.isPotion = true;
+						pickup1.sprite.setTexture(potion);
+						pickup1.rect.setPosition(wallArray[counter].rect.getPosition());
+						pickupArray.push_back(pickup1);
+					}
+
+					else if (generateRandom0(wallArray[counter].percentDropAtkup) == 1)
+					{
+						pickup1.isAtkyp = true;
+						pickup1.isBoot = false;
+						pickup1.isCoin = false;
+						pickup1.isGlove = false;
+						pickup1.isUlti = false;
+						pickup1.isPotion = false;
+						pickup1.sprite.setTexture(atkup);
 						pickup1.rect.setPosition(wallArray[counter].rect.getPosition());
 						pickupArray.push_back(pickup1);
 					}
@@ -1001,21 +1271,20 @@ int main()
 			//create more money 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
 			{
-				pickup1.rect.setPosition(generateRandom(1080), generateRandom(720));
-				pickupArray.push_back(pickup1);
+					pickup1.rect.setPosition(generateRandom(1080), generateRandom(720));
+					pickupArray.push_back(pickup1);	
 			}
 
 			if (Player1.Arrive == true)
-			{
-				// set up projectile 
-				if (elapsed1.asSeconds() >= projectile1.shootingspeed)
-				{
-					clock.restart();
-
-
+			{		
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 					{
-						
+						 
+						if (elapsed1.asSeconds() >= projectile1.shootingspeed)
+						{
+							clock.restart();
+							soundShoot.play();
+						// set up projectile 
 							if (Player1.playerglove == false )
 							{
 
@@ -1055,6 +1324,19 @@ int main()
 						
 							if (Player1.playerulti == true && sf::Keyboard::isKeyPressed(sf::Keyboard::B))
 							{
+								soundUlti.play();
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(30), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(30));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(30), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(30));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(30), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(30));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
 
 									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(40), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(40));
 									projectile1.direction = Player1.direction;
@@ -1067,22 +1349,22 @@ int main()
 									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(40), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(40));
 									projectile1.direction = Player1.direction;
 									projectileArray.push_back(projectile1);
+
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(50), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(50));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(50), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(50));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
+									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(50), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(50));
+									projectile1.direction = Player1.direction;
+									projectileArray.push_back(projectile1);
+
 
 									clock6.restart();
-									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(40), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(40));
-									projectile1.direction = Player1.direction;
-									projectileArray.push_back(projectile1);
-
-									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(40), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(40));
-									projectile1.direction = Player1.direction;
-									projectileArray.push_back(projectile1);
-
-									projectile1.rect.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) / 2 - (projectile1.rect.getSize().x) / 2 + generateRandom(40), Player1.rect.getPosition().y + (Player1.rect.getSize().y) / 2 - (projectile1.rect.getSize().y) / 2 + generateRandom(40));
-									projectile1.direction = Player1.direction;
-									projectileArray.push_back(projectile1);
-
-
-									
 
 									textDisplay1.text.setFillColor(sf::Color::White);
 									if (projectile1.shootlimit >= 1)
@@ -1090,7 +1372,7 @@ int main()
 										textDisplay1.text.setString(to_string(projectileArray[counter].shootlimit));
 										textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 2 / 5, Player1.rect.getPosition().y);
 										textdisplayArray.push_back(textDisplay1);
-
+										projectile1.shootlimit--;
 									}
 									else if (projectile1.shootlimit <= 0)
 									{
@@ -1099,8 +1381,9 @@ int main()
 										textDisplay1.text.setString("OUT OF SPECIAL ATTACK");
 										textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 2 / 5, Player1.rect.getPosition().y);
 										textdisplayArray.push_back(textDisplay1);
+										projectile1.shootlimit--;
 									}
-									projectile1.shootlimit--;
+								
 
 
 
@@ -1186,33 +1469,49 @@ int main()
 			//window.draw(Player1.rect);
 			window.draw(Player1.sprite);
 
-			}
-			//Player1 dead 
-			else if (Player1.Arrive == false)
-			{
-				Player1.sprite.setTexture(coffin);
-				window.draw(Player1.sprite);
-			}
-
-			else
-			{
-
-			}
-
 
 			//set player view
 			window.setView(view1);
 			view1.setCenter(Player1.rect.getPosition());
 
 			//draw player hp
-			text.setPosition(Player1.rect.getPosition().x + 300 , Player1.rect.getPosition().y + 335);
-			text.setString("Player HP : " + to_string(Player1.hp));
+			text.setPosition(Player1.rect.getPosition().x + 300, Player1.rect.getPosition().y + 335);
+			text.setFillColor(sf::Color(250, 20, 0));
+			text.setString("Player HP : " + to_string(Player1.hp) );
 			window.draw(text);
+			text.setFillColor(sf::Color::White);
+
+			//draw player max hp
+			text.setPosition(Player1.rect.getPosition().x + 480, Player1.rect.getPosition().y + 335);
+			text.setFillColor(sf::Color(175, 0, 0));
+			text.setString(" \\ " + to_string(Player1.maxHp));
+			window.draw(text);
+			text.setFillColor(sf::Color::White);
 
 			// draw player money 
 			text.setPosition(Player1.rect.getPosition().x + 300, Player1.rect.getPosition().y - 335);
 			text.setString("Player money : " + to_string(Player1.playermoney));
 			window.draw(text);
+	
+			
+			}
+			//Player1 dead 
+			else if (Player1.Arrive == false )
+			{	
+				window.clear();
+				goto startgame;
+				
+			}
+
+			else
+			{
+				//nothing
+			}
+
+
+			
+
+			
 			
 		}
 

@@ -9,7 +9,7 @@ public:
 	int direction = 0;
 	bool hit = false ;
 	int counterlifetime = 0;
-	int lifetime = 50;
+	int lifetime = 100 ;
 	int counter = 0; 
 	int shootlimit = 9 ;
 	float fastDelay = 6 ;
