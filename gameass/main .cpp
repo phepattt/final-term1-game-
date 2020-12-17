@@ -34,9 +34,12 @@ using namespace std;
 int main()
 {
 startgame :
-
-	int spawntime = 8;
+	int delayspawn = 0;
+	int collecter1 = 0;
+	int enemytype = 0;
+	int spawntime = 8 ;
 	int teleport = 0 ;
+	int mod1 = 0;
 	//counter 
 	int counter = 0;
 	int counter2 = 0;
@@ -62,6 +65,7 @@ startgame :
 	sf::Clock clock9;
 	sf::Clock clock10;
 	sf::Clock clock11;
+	sf::Clock clock12;
 	// create window 
 	sf::RenderWindow window(sf::VideoMode(1080 , 720), "LegendAdventure",sf::Style::Close);
 	window.setFramerateLimit(120);
@@ -1196,13 +1200,13 @@ startgame :
 			sf::Time elapsed9 = clock9.getElapsedTime();
 			sf::Time elapsed10 = clock10.getElapsedTime();
 			sf::Time elapsed11 = clock11.getElapsedTime();
+			sf::Time elapsed12 = clock12.getElapsedTime();
+			
 
 			
-			std::cout << elapsed11.asSeconds() << std::endl;
-
 			if (elapsed11.asSeconds() >= spawntime)
 			{
-				int enemytype = 0;
+				
 				if (enemytype == 0)
 				{
 					enemy1.sprite.setTexture(texturePurplebat);
@@ -1227,20 +1231,55 @@ startgame :
 				{
 					enemy1.sprite.setTexture(pigman);
 					enemyArray.push_back(enemy1);
+					enemy1.hp += 4 ;
+					enemy1.attackdamge += 2 ;
+					enemy1.dropScore += 5 ;
+					collecter1 = enemy1.dropScore;
+					mod1 = collecter1 % 2; 
+						if (mod1 == 1)
+						{
+							pickup1.coinvalue += 1; 
+							pickupArray.push_back(pickup1);
+						}
+				
 				}
-				printf("%d\n", enemytype);
+			
 				int randspawn = generateRandom(10);
-				//at room2 
+				//at room1
 				enemy1.rect.setPosition(3 * 90, 3 * 90);
 				enemyArray.push_back(enemy1);
-
-		
+				//at room2 top
 				enemy1.rect.setPosition(8 * 90, 6 * 90);
 				enemyArray.push_back(enemy1);
+				//at room2 down
+				enemy1.rect.setPosition(8 * 90, 11 * 90);
+				enemyArray.push_back(enemy1);
 
+	
+				if (delayspawn == 4)
+				{
+					//at room4
+					enemy1.rect.setPosition(22 * 90, 7 * 90);
+					enemyArray.push_back(enemy1);
+					//at room4
+					enemy1.rect.setPosition(27 * 90, 10 * 90);
+					enemyArray.push_back(enemy1);
+					//at room4
+					enemy1.rect.setPosition(20 * 90, 14 * 90);
+					enemyArray.push_back(enemy1);
+					//at room4
+					enemy1.rect.setPosition(22 * 90, 12 * 90);
+					enemyArray.push_back(enemy1);
+
+				}
 				clock11.restart();
 
-				enemy1.hp += 10 ;
+				delayspawn++;
+				if (enemytype > 4)
+				{
+					enemytype = 0;
+				}
+				
 				enemytype++;
 					if (enemytype > 4)
 					{
@@ -1463,15 +1502,18 @@ startgame :
 				{
 					if (enemyArray[counter].aggro == true)
 					{
-						if (elapsed9.asSeconds() >= 1)
+						if (elapsed9.asSeconds() >= 1.25 )
 						{
 							clock9.restart();
 
 							int tempRand = generateRandom(3);
 
+							projectile1.movementSpeed = projectile1.movementSpeedforenemy;
+
 							if (tempRand == 1)
 							{
-								if (Player1.rect.getPosition().x < enemyArray[counter].rect.getPosition().x && (abs(Player1.rect.getPosition().y - enemyArray[counter].rect.getPosition().y) <= 90)) // player at the leftside of enemy 
+								projectile1.movementSpeed = 5 ;
+								if (Player1.rect.getPosition().x < enemyArray[counter].rect.getPosition().x && (abs(Player1.rect.getPosition().y - enemyArray[counter].rect.getPosition().y) <= 270)) // player at the leftside of enemy 
 								{
 									soundShoot.play(); 
 									projectile1.enemyprojectile = true; 
@@ -1484,7 +1526,7 @@ startgame :
 								}
 
 
-								if (Player1.rect.getPosition().x > enemyArray[counter].rect.getPosition().x && (abs(Player1.rect.getPosition().y - enemyArray[counter].rect.getPosition().y) <= 90)) // player at the rightside of enemy 
+								else if (Player1.rect.getPosition().x > enemyArray[counter].rect.getPosition().x && (abs(Player1.rect.getPosition().y - enemyArray[counter].rect.getPosition().y) <= 270)) // player at the rightside of enemy 
 								{
 									soundShoot.play();
 									projectile1.enemyprojectile = true;
@@ -1496,7 +1538,7 @@ startgame :
 									enemyArray[counter].direction = 2;
 								}
 
-								if (Player1.rect.getPosition().y < enemyArray[counter].rect.getPosition().y && (abs(Player1.rect.getPosition().x - enemyArray[counter].rect.getPosition().x) <= 90)) // player at the upside of enemy 
+								else if (Player1.rect.getPosition().y < enemyArray[counter].rect.getPosition().y && (abs(Player1.rect.getPosition().x - enemyArray[counter].rect.getPosition().x) <= 270)) // player at the upside of enemy 
 								{
 									soundShoot.play();
 									projectile1.enemyprojectile = true;
@@ -1507,7 +1549,7 @@ startgame :
 
 									enemyArray[counter].direction = 3;
 								}
-								if (Player1.rect.getPosition().y > enemyArray[counter].rect.getPosition().y && (abs(Player1.rect.getPosition().x - enemyArray[counter].rect.getPosition().x) <= 90)) // player at the upside of enemy 
+								else if (Player1.rect.getPosition().y > enemyArray[counter].rect.getPosition().y && (abs(Player1.rect.getPosition().x - enemyArray[counter].rect.getPosition().x) <= 270)) // player at the upside of enemy 
 								{
 									soundShoot.play();
 									projectile1.enemyprojectile = true;
@@ -1518,7 +1560,7 @@ startgame :
 
 									enemyArray[counter].direction = 4;
 								}
-
+								projectile1.movementSpeed = projectile1.movementSpeedforplayer ;
 
 							}
 							else if (tempRand == 2)
@@ -1539,6 +1581,7 @@ startgame :
 								{
 									enemyArray[counter].direction = 4;
 								}
+								projectile1.movementSpeed = projectile1.movementSpeedforplayer;
 
 							}
 							else 
@@ -1559,6 +1602,7 @@ startgame :
 								{
 									enemyArray[counter].direction = 2;
 								}
+								 projectile1.movementSpeed = projectile1.movementSpeedforplayer;
 
 							}
 
@@ -1728,8 +1772,10 @@ startgame :
 								
 
 									textDisplay1.text.setFillColor(sf::Color::Yellow);
-									textDisplay1.text.setString("+0.25 speed");
+									textDisplay1.text.setString("boot of speed");
 									Player1.movementSpeed += pickup1.bootspeed;
+									projectile1.movementSpeed += pickup1.bootspeed;
+									projectile1.movementSpeedforplayer += pickup1.bootspeed;
 									textDisplay1.text.setPosition(Player1.rect.getPosition().x + (Player1.rect.getSize().x) * 4 / 5, Player1.rect.getPosition().y);
 									textdisplayArray.push_back(textDisplay1);
 
@@ -2032,7 +2078,8 @@ startgame :
 				if (enemyArray[counter].arrive == false)
 				{
 					Player1.SCORE += enemyArray[counter].dropScore ; 
-					if (generateRandom0(enemyArray[counter].percentDropCoin) == 1)
+				
+					if (generateRandom0(enemyArray[counter].percentDropCoin) == 1 || generateRandom0(enemyArray[counter].percentDropCoin) == 0 )
 					{
 						pickup1.isAtkyp = false;
 						pickup1.isBoot = false;
@@ -2043,10 +2090,10 @@ startgame :
 						pickup1.isHeart = false; 
 						pickup1.sprite.setTexture(coin);
 						pickup1.rect.setPosition(enemyArray[counter].rect.getPosition());
-						pickupArray.push_back(pickup1);
+						pickupArray.push_back(pickup1);				
 					}
 
-					else if (generateRandom0(enemyArray[counter].percentDropGlove) == 1)
+					else if (generateRandom0(enemyArray[counter].percentDropGlove) == 2)
 					{
 						
 						pickup1.isAtkyp = false;
@@ -2584,7 +2631,7 @@ startgame :
 				}
 
 				window.clear();
-				std::cout << menu.time << std::endl;
+			
 				view1.setCenter(window.getSize().x/2, window.getSize().y / 2);
 				window.setView(view1);
 

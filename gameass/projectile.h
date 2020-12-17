@@ -3,9 +3,11 @@
 class projectile : public entity
 {
 public:
-	float movementSpeed = 8.5 ;
+	float movementSpeed = 11 ;
+	float movementSpeedforenemy = 4;
+	float movementSpeedforplayer = 11;
 	float shootingspeed = 0.3 ;
-	int attackdamge = 10 ;
+	int attackdamge = 4 ;
 	int bossATK = 10; 
 	int direction = 0;
 	bool hit = false ;

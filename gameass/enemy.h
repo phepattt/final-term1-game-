@@ -16,12 +16,12 @@ public :
 	int percentDropGlove = 5; 
 	int percentDropHeart = 10;
 	int percentDropCoin = 2 ; 
-	int percentDropUlti = 10 ; 
+	int percentDropUlti = 1 ; 
 	int percentDropPotion = 8 ;
 	int percentDropBoot = 10   ;
 	int percentDropAtkup = 8 ;
 	
-	int hp = 20; 
+	int hp = 12 ; 
 	bool arrive = true ; 
 	bool enemycanmoveup = true;
 	bool enemycanmovedown = true;

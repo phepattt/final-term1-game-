@@ -10,8 +10,8 @@ public :
 	int attackdamge = 5; 
 	int counterwalk = 0; 
 	int direction = 4 ; 
-	int hp = 20 ; 
-	int maxHp = 20; 
+	int hp = 50 ; 
+	int maxHp = 50; 
 	int playermoney = 0;
 	int push = 6 ;  
 	int SCORE = 0; 
