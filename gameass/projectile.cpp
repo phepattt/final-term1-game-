@@ -43,3 +43,4 @@ void projectile::updateprojectileAnimation()
 {
 	sprite.setPosition(rect.getPosition());
 }
+

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="destroy.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="main .cpp" />
@@ -31,6 +32,7 @@
     <ClCompile Include="wall.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="destroy.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="menu.h" />

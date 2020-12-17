@@ -4,21 +4,22 @@
 class enemy : public entity
 {
 public :
-	int movementSpeed = 1;
+	int movementSpeed = 2;
 	int movementlength = 100; 
-	int attackdamge = 5;
+	int attackdamge = 2 ;
 	int counterwalk = 0;
-	int direction = 4;
+	int direction = 0 ;
 	int counter = 0  ;
 	int mod = 10 ;
-	int push = 3;
-	int percentDropGlove = 15; 
-	int percentDropHeart = 30;
-	int percentDropCoin = 4 ; 
-	int percentDropUlti = 35 ; 
-	int percentDropPotion = 15 ;
-	int percentDropBoot = 20;
-	int percentDropAtkup = 20 ;
+	int push = 4 ;
+	int dropScore = 10; 
+	int percentDropGlove = 5; 
+	int percentDropHeart = 10;
+	int percentDropCoin = 2 ; 
+	int percentDropUlti = 10 ; 
+	int percentDropPotion = 8 ;
+	int percentDropBoot = 10   ;
+	int percentDropAtkup = 8 ;
 	
 	int hp = 20; 
 	bool arrive = true ; 
@@ -26,7 +27,7 @@ public :
 	bool enemycanmovedown = true;
 	bool enemycanmoveright = true;
 	bool enemycanmoveleft = true;
-
+	bool aggro = false; 
 	enemy();
 
 	void updateenemy();

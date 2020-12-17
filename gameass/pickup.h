@@ -14,10 +14,13 @@ public:
 	bool isUlti = false; 
 	bool isAtkyp = false;
 	bool isHeart = false;
+	bool inShop = false;
+	bool isKey = false;
 
+	int price = 30; 
 	int coinvalue   =  1 ;
 	int heartValue = 40 ;
-	int gloveValue  = 10 ;
+	int gloveValue  = 15 ;
 	int potionValue = 20 ; 
 	int bootValue   = 25 ;
 	int atkupValue	= 25;
@@ -28,10 +31,10 @@ public:
 	int heal = 10;
 
 	float bootspeed = 0.25;
-	sf::Text pickedItem;
+	
 	pickup();
 
 	void updatepickup();
-
+	void updatepickupPrice();
 };
 

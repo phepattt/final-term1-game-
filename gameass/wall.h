@@ -9,16 +9,18 @@ public:
 	bool destructable = false;
 	int hp = 5;
 
-	int percentDropGlove = 30;
-	int percentDropCoin = 8;
-	int percentDropHeart = 60;
-	int percentDropUlti = 70;
-	int percentDropPotion = 30;
-	int percentDropBoot = 40;
-	int percentDropAtkup = 40;
+	int percentDropGlove = 3;
+	int percentDropCoin = 3;
+	int percentDropHeart = 6 ;
+	int percentDropUlti = 8 ;
+	int percentDropPotion = 3;
+	int percentDropBoot = 3;
+	int percentDropAtkup = 3;
 	bool destroy = false; 
 		
 	wall();
 	void updatewall();
+	void destroydoor();
+	void builddoor();
 };
 

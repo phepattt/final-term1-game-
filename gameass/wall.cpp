@@ -9,6 +9,10 @@ wall::wall()
 
 void wall::updatewall()
 {
-	
+	sprite.setPosition(rect.getPosition());
 };
 
+void wall::destroydoor()
+{
+
+}
